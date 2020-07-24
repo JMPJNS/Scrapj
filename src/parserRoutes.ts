@@ -4,15 +4,19 @@ import AnilistParser from "./parser/anilist"
 const ParserRoutes = Router()
 
 // Anilist
-ParserRoutes.get("/anilist", async (req, res) => {
+ParserRoutes.get("/anilist/*", async (req, res) => {
     const parser = new AnilistParser()
-    const url = req.header("anilist-url")
-    
-    if (!url) {
+    const split = req.url.split("/anilist/")
+
+
+    if (split.length == 1) {
         res.statusCode = 400
-        res.end("No url provided (anilist-url header)")
+        res.end("No url provided")
         return
     }
+    
+    const url = split[1]
+      
     try {
         const t = await parser.parse(url)
         res.json(t)
