@@ -32,9 +32,9 @@ export default class AnilistParser extends Parser {
         }
         
         const req = await this._axios.get(url)        
-        res.RawHTML = req.data
+        // res.RawHTML = req.data
         
-        const $ = this._cheerio.load(res.RawHTML)
+        const $ = this._cheerio.load(req.data)
 
         switch(res.AniType) {
             case "Anime":
@@ -59,97 +59,117 @@ export default class AnilistParser extends Parser {
     }
     
     private parseAnime($: CheerioStatic): Anilist.Anime {
-        const data = <Anilist.Anime>{}
+        const data = this.parseItemData($)
+        const anime = <Anilist.Anime>{...data}
 
-        data.Title = $(`meta[property='og:title']`).attr("content")
-        data.Description = $(`meta[property="og:description"]`).attr("content")
-        data.ThumbnailURL = $(`meta[property="og:image"]`).attr("content")
+        $(".data-set").each((i, row) => {
+            const name = row.children[0].children[0].data
+            const child = row.children[2].children
+            switch (name) {
+                case "Airing":
+                    try {
+                        anime.EpisodeCount = parseInt(child[0].children[0].data.trim().split(" ")[1].split(":")[0])
+                    } catch (e) {}
+                    break;
+                // Episodes after Airing to overwrite the Episode Count if present
+                case "Episodes":
+                    try {
+                        anime.EpisodeCount = parseInt(child[0].data)
+                    } catch (e) {}
+                    break;
+                case "Season":
+                    anime.Season = child[0].data.trim()
+                    break;
+                case "Studios":
+                    anime.Studios = []
+                    for (const studio of child) {
+                        anime.Studios.push(studio.children[0].children[0].data.trim())
+                    }
+                    break;
+                case "Producers":
+                    anime.Producers = []
+                    for (const producer of child) {
+                        anime.Producers.push(producer.children[0].children[0].data.trim())
+                    }
+                    break;
+            }
+        })
 
-        const dataSets = $(".data-set")
-
-        try {
-            let countString = dataSets[0].children[2].firstChild.data
-            if (!countString) countString = dataSets[0].children[2].firstChild.firstChild.data.split(" ")[1].split(":")[0]
-            
-            data.EpisodeCount = parseInt(countString)
-        } catch (e) {}
-        
-        data.Format = dataSets[1].children[2].firstChild.data.trim()
-        data.EpisodeLength = dataSets[2].children[2].firstChild.data.trim()
-        data.Status = dataSets[3].children[2].firstChild.data.trim()
-
-        data.Season = dataSets[4].children[2].firstChild.data.trim()
-        
-        try {
-            data.AvarageScore = parseInt(dataSets[5].children[2].firstChild.data.split("%")[0])
-        } catch (e) {}
-        try {
-            data.MeanScore = parseInt(dataSets[6].children[2].firstChild.data.split("%")[0])
-        } catch (e) {}
-        try {
-            data.Popularity = parseInt(dataSets[7].children[2].firstChild.data)
-        } catch (e) {}
-        try {
-            data.Favorites = parseInt(dataSets[8].children[2].firstChild.data)
-        } catch (e) {}
-
-        //TODO Studios parser
-        // data.Producers = []
-        
-        //TODO producers parser
-        // data.Producers = []
-        
-        data.Source = dataSets[11].children[2].firstChild.data
-
-        //TODO genres parser
-        // data.Genres = []
-
-        data.RomajiTitle = dataSets[13].children[2].firstChild.data.trim()
-        data.EnglishTitle = dataSets[14].children[2].firstChild.data.trim()
-        data.NativeTitle = dataSets[15].children[2].firstChild.data.trim()
-
-        //TODO synonyms parser
-        // data.Synonyms = []
-
-        return data
+        return anime
     }
 
     private parseManga($: CheerioStatic): Anilist.Manga {
-        const data = <Anilist.Manga>{}
+        const data = this.parseItemData($)
+        const manga = <Anilist.Manga>{...data}
+
+        $(".data-set").each((i, row) => {
+            const name = row.children[0].children[0].data
+            const child = row.children[2].children
+            switch (name) {
+            }
+        })
+
+        return manga
+    }
+    
+    private parseItemData($: CheerioStatic): Anilist.ItemData {
+        const data = <Anilist.ItemData>{}
 
         data.Title = $(`meta[property='og:title']`).attr("content")
         data.Description = $(`meta[property="og:description"]`).attr("content")
         data.ThumbnailURL = $(`meta[property="og:image"]`).attr("content")
 
-        const dataSets = $(".data-set")
-
-        data.Format = dataSets[0].children[2].firstChild.data.trim()
-        data.Status = dataSets[1].children[2].firstChild.data.trim()
-
-        try {
-            data.AvarageScore = parseInt(dataSets[2].children[2].firstChild.data.split("%")[0])
-        } catch (e) {}
-        try {
-            data.MeanScore = parseInt(dataSets[3].children[2].firstChild.data.split("%")[0])
-        } catch (e) {}
-        try {
-            data.Popularity = parseInt(dataSets[4].children[2].firstChild.data)
-        } catch (e) {}
-        try {
-            data.Favorites = parseInt(dataSets[5].children[2].firstChild.data)
-        } catch (e) {}
-
-        data.Source = dataSets[6].children[2].firstChild.data.trim()
-
-        //TODO genres parser
-        // data.Genres = []
-
-        data.RomajiTitle = dataSets[8].children[2].firstChild.data.trim()
-        data.NativeTitle = dataSets[9].children[2].firstChild.data.trim()
-
-        //TODO synonyms parser
-        // data.Synonyms = []
-
+        $(".data-set").each((i, row) => {
+            const name = row.children[0].children[0].data
+            const child = row.children[2].children
+            switch (name) {
+                case "Format":
+                    data.Format = child[0].data.trim()
+                    break;
+                case "Status":
+                    data.Status = child[0].data.trim()
+                    break;
+                case "Mean Score":
+                    try {
+                        data.MeanScore = parseInt(child[0].data.split("%")[0].trim())
+                    } catch (e) {}
+                    break;
+                case "Avarage Score":
+                    try {
+                        data.AvarageScore = parseInt(child[0].data.split("%")[0].trim())
+                    } catch (e) {}
+                    break;
+                case "Popularity":
+                    try {
+                        data.Popularity = parseInt(child[0].data.trim())
+                    } catch (e) {}
+                    break;
+                case "Favorites":
+                    try {
+                        data.Favorites = parseInt(child[0].data.trim())
+                    } catch (e) {}
+                    break;
+                case "Source":
+                    data.Source = child[0].data.trim()
+                    break;
+                case "English":
+                    data.EnglishTitle = child[0].data.trim()
+                    break;
+                case "Romaji":
+                    data.RomajiTitle = child[0].data.trim()
+                    break;
+                case "Native":
+                    data.NativeTitle = child[0].data.trim()
+                    break;
+                case "Genres":
+                    data.Genres = []
+                    for (const genre of child) {
+                        data.Genres.push(genre.children[0].children[0].data.trim())
+                    }
+                    break;
+            }
+        })
+                
         return data
     }
     
@@ -210,6 +230,7 @@ namespace Anilist {
         RomajiTitle: string
         NativeTitle: string
         Synonyms: string[]
+        EnglishTitle: string
     }
 
     export interface Anime extends ItemData {
@@ -218,7 +239,6 @@ namespace Anilist {
         EpisodeLength: string
         Studios: string[]
         Producers: string[]
-        EnglishTitle: string
     }
 
     export interface Manga extends ItemData {

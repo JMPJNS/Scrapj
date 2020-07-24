@@ -3,6 +3,7 @@ import AnilistParser from "./parser/anilist"
 
 const ParserRoutes = Router()
 
+// Anilist
 ParserRoutes.get("/anilist", async (req, res) => {
     const parser = new AnilistParser()
     const url = req.header("anilist-url")
@@ -24,7 +25,6 @@ ParserRoutes.get("/anilist", async (req, res) => {
             res.end(e.message)
         }
     }
-    
 })
 
 export default ParserRoutes
