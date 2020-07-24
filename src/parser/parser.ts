@@ -1,9 +1,17 @@
-﻿export default class Parser {
+﻿import ParserResult from "../models/parserResult"
+import * as cheerio from "cheerio"
+import * as axios from "axios"
+
+export default abstract class Parser {
     public Name: string
     public Description: string
-    public Url: string
+    protected _cheerio!: CheerioAPI
+    protected _axios!: axios.AxiosStatic
     
-    public Parser() {
-        
+    protected constructor() {
+        this._cheerio = cheerio
+        this._axios = axios.default
     }
+
+    public async abstract parse(url: string): Promise<ParserResult>
 }

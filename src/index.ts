@@ -1,5 +1,5 @@
 import * as express from "express"
-import ParserRoutes from "./parserRoutes";
+import ParserRoutes from "./parserRoutes"
 const port = 3000
 const app = express()
 
