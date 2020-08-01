@@ -2,7 +2,7 @@
   "compilerOptions": {
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
-    "target": "esnext",
+    "target": "es5",
     "module": "commonjs",
     "outDir": "dist",
     "sourceMap": true

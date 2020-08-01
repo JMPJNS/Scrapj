@@ -1,5 +1,6 @@
 ﻿import Parser from "./parser"
 import IParserResult from "../models/parserResult"
+import {InvalidURLError, NotImplementedError} from "../errors"
 
 export default class AnilistParser extends Parser {
     public constructor() {
@@ -12,23 +13,25 @@ export default class AnilistParser extends Parser {
         const res: IAnilistParserResult = <IAnilistParserResult>{}
         res.Parser = this
         
-        if (!url.startsWith("https://anilist.co")) {
-            throw new TypeError("Not an Anilist URL")
+        const baseUrl = "https://anilist.co"
+        
+        if (!url.startsWith(baseUrl)) {
+            throw new InvalidURLError("Not an Anilist URL")
         }
         
-        if (url.startsWith("https://anilist.co/user")) {
+        if (url.startsWith(baseUrl+"/user")) {
             res.AniType = "Profile"
             if (url.endsWith("animelist")) {
                 res.AniType = "Animelist"
             } else if (url.endsWith("mangalist")) {
                 res.AniType = "Mangalist"
             }
-        } else if(url.startsWith("https://anilist.co/anime")) {
+        } else if(url.startsWith(baseUrl+"/anime")) {
             res.AniType = "Anime"
-        } else if (url.startsWith("https://anilist.co/manga")) {
+        } else if (url.startsWith(baseUrl+"/manga")) {
             res.AniType = "Manga"
         } else {
-            throw new TypeError("Invalid Anilist URL")
+            throw new InvalidURLError("Invalid Anilist URL")
         }
         
         const req = await this._axios.get(url)        
@@ -175,6 +178,7 @@ export default class AnilistParser extends Parser {
     
     private parseProfile($: CheerioStatic): Anilist.Profile {
         const profile = <Anilist.Profile>{}
+        throw new NotImplementedError("This Feature is not yet implemented")
 
         return profile
     }
@@ -182,6 +186,7 @@ export default class AnilistParser extends Parser {
     private parseAnimeList($: CheerioStatic): Anilist.AnimeList {
         const list = this.parseList($)
         const animeList = <Anilist.AnimeList>{...list}
+        throw new NotImplementedError("This Feature is not yet implemented")
 
         return animeList
     }
@@ -189,12 +194,14 @@ export default class AnilistParser extends Parser {
     private parseMangaList($: CheerioStatic): Anilist.MangaList {
         const list = this.parseList($)
         const mangaList = <Anilist.MangaList>{...list}
+        throw new NotImplementedError("This Feature is not yet implemented")
 
         return mangaList
     }
     
     private parseList($: CheerioStatic): Anilist.List {
         const list = <Anilist.List>{}
+        throw new NotImplementedError("This Feature is not yet implemented")
 
         return list
     }
