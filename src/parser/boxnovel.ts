@@ -47,9 +47,31 @@ export default class BoxNovelParser extends Parser {
 			case "novel-overview":
 				res.Overview = this.parseOverview($)
 				break;
+			case "novel-page":
+				res.Chapter = this.parseChapter($)
+				break;
+			default:
+				throw new NotImplementedError("This Feature is not yet implemented")
 		}
 		
 		return res
+	}
+
+	parseChapter($: CheerioStatic): Chapter { 
+		const chapter = <Chapter>{}
+		
+		chapter.Name = $(".bookname")[0]?.children[1]?.children[0]?.data?.trim()
+
+		let content = ""
+		const descElems = $("#content")[0]?.children.filter(x => x.type == "tag") || []
+		for (const el of descElems) {
+			const text = el.children[0]?.data?.trim()
+			if (text == undefined) continue
+			content = content + text + "\n\n"
+		}
+		chapter.Content = content.trim()
+		
+		return chapter
 	}
 	
 	parseOverview($: CheerioStatic): NovelOverview {
@@ -100,6 +122,7 @@ export default class BoxNovelParser extends Parser {
 interface IBoxNovelParserResult extends IParserResult {
 	BoxType: "novel-overview" | "novel-page" | "manga-genre" | "manga-tag"
 	Overview: NovelOverview
+	Chapter: Chapter
 }
 
 interface NovelOverview {
@@ -115,6 +138,11 @@ interface NovelOverview {
 	Status: string
 	ChapterList: ChapterOverview[]
 	ChapterCount: number
+}
+
+interface Chapter {
+	Name: string
+	Content: string
 }
 
 interface ChapterOverview {
