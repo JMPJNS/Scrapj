@@ -1,7 +1,8 @@
 ﻿import {Router} from "express"
-import AnilistParser from "./parser/anilist"
 import {InvalidURLError} from "./errors"
+import AnilistParser from "./parser/anilist"
 import BoxNovelParser from "./parser/boxnovel"
+import MalParser from "./parser/mal"
 
 const ParserRoutes = Router()
 
@@ -26,6 +27,34 @@ ParserRoutes.get("/anilist/*", async (req, res) => {
         if (e instanceof InvalidURLError) {
             res.statusCode = 400
             res.end("invalid anilist url\n\n" + e.message)
+        } else {
+            res.statusCode = 500
+            res.end(e.message)
+        }
+    }
+})
+
+// MyAnimeList
+ParserRoutes.get("/mal/*", async (req, res) => {
+    const parser = new MalParser()
+    const split = req.url.split("/mal/")
+
+
+    if (split.length == 1) {
+        res.statusCode = 400
+        res.end("No url provided")
+        return
+    }
+    
+    const url = split[1]
+      
+    try {
+        const t = await parser.parse(url)
+        res.json(t)
+    } catch (e) {
+        if (e instanceof InvalidURLError) {
+            res.statusCode = 400
+            res.end("invalid mal url\n\n" + e.message)
         } else {
             res.statusCode = 500
             res.end(e.message)
