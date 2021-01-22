@@ -1,33 +1,33 @@
-import Parser from "./parser";
+import Parser from "./parser"
 import IParserResult from "../models/parserResult"
-import { InvalidURLError } from "../errors";
+import { InvalidURLError } from "../errors"
 
 export default class MalParser extends Parser {
-    public constructor() {
-        super()
-        this.Name = "MAL"
-        this.Description = "Parse MyAnimeList Anime/Manga"
-    }
+	public constructor() {
+		super()
+		this.Name = "MAL"
+		this.Description = "Parse MyAnimeList Anime/Manga"
+	}
 
-    public async parse(url: string): Promise<IMalParserResult> {
-        const res: IMalParserResult = <IMalParserResult>{}
-        res.Parser = this
+	public async parse(url: string): Promise<IMalParserResult> {
+		const res: IMalParserResult = <IMalParserResult>{}
+		res.Parser = this
 
-        const baseUrl = "https://myanimelist.net"
+		const baseUrl = "https://myanimelist.net"
 
-        if (!url.startsWith(baseUrl)) {
-            throw new InvalidURLError("Not a MAL URL")
-        }
+		if (!url.startsWith(baseUrl)) {
+			throw new InvalidURLError("Not a MAL URL")
+		}
 
-        const req = await this._axios.get(url)        
-        const $ = this._cheerio.load(req.data)
+		const req = await this._axios.get(url)        
+		const $ = this._cheerio.load(req.data)
 
-        if (url.includes("/anime/")) {
+		if (url.includes("/anime/")) {
 
-        }
+		}
 
-        return res;
-    }
+		return res
+	}
 }
 
 interface IMalParserResult extends IParserResult {

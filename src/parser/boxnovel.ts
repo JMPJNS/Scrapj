@@ -23,7 +23,7 @@ export default class BoxNovelParser extends Parser {
 		if (url.startsWith(baseUrl+"/novel")) {
 			const last = split.slice(-1)
 			if (last == "/") {
-				split = split.substring(0, split.length - 1);
+				split = split.substring(0, split.length - 1)
 			}
 			
 			const count = (split.match(/\//g) || []).length
@@ -44,14 +44,14 @@ export default class BoxNovelParser extends Parser {
 		const $ = this._cheerio.load(req.data)
 
 		switch(res.BoxType) {
-			case "novel-overview":
-				res.Overview = this.parseOverview($)
-				break;
-			case "novel-page":
-				res.Chapter = this.parseChapter($)
-				break;
-			default:
-				throw new NotImplementedError("This Feature is not yet implemented")
+		case "novel-overview":
+			res.Overview = this.parseOverview($)
+			break
+		case "novel-page":
+			res.Chapter = this.parseChapter($)
+			break
+		default:
+			throw new NotImplementedError("This Feature is not yet implemented")
 		}
 		
 		return res
