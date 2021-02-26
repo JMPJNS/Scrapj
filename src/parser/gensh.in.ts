@@ -136,7 +136,7 @@ export default class GenshInParser extends Parser {
 			for (const node of desc) {
 				description += $(node).text()
 			}
-			constellation.description = description
+			constellation.description = description || undefined
 
 			if (constellation.name != "") {
 				res.constellations.push(constellation)
