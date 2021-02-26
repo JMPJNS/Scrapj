@@ -130,7 +130,7 @@ export default class GenshInParser extends Parser {
 
 			const [l, ...desc] = $(row.children?.[1])?.children("p").toArray()
 
-			constellation.level = parseInt(l?.children[0]?.children[0]?.data?.match(/\d+/)[0]) || undefined
+			constellation.level = parseInt(l?.children[0]?.children?.[0]?.data?.match(/\d+/)[0]) || undefined
 
 			let description = ""
 			for (const node of desc) {
