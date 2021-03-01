@@ -27,6 +27,8 @@ export default class GenshInParser extends Parser {
 
 		if (url.includes("/characters/")) {
 			res.character = this.parseCharacter($)
+		} else {
+			throw new NotImplementedError("")
 		}
 
 		return res
